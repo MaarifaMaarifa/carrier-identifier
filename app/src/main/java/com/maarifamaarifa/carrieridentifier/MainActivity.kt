@@ -3,14 +3,18 @@ package com.maarifamaarifa.carrieridentifier
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -53,6 +57,8 @@ fun View(modifier: Modifier ) {
         ApplicationBanner(modifier = modifier)
         Spacer(modifier = modifier.height(20.dp))
         NumberInput(modifier = modifier)
+        Spacer(modifier = modifier.height(20.dp))
+        ContactInformation(modifier = modifier)
     }
 
 }
@@ -142,7 +148,7 @@ fun NumberInput(modifier: Modifier) {
     CardView(modifier = modifier) {
         Column (modifier = modifier
             .fillMaxSize()
-            .padding(5.dp), horizontalAlignment = Alignment.CenterHorizontally){
+            .padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally){
             TextField(value = textInput, onValueChange = {text -> onValueChange(text)}, placeholder = {placeholder()}, isError = isError, leadingIcon = {TextInputLeadingIcon()})
             Spacer(modifier = modifier.height(10.dp))
             IdentifiedNumberText(identifiedNumber)
@@ -180,6 +186,29 @@ fun ErrorText(errorText: String, modifier: Modifier) {
         }
 
     }
+}
+
+@Composable
+fun ContactInformation(modifier: Modifier) {
+    @Composable
+    fun Contact(@DrawableRes id: Int , text: String, contactName: String, contactLink: String) {
+        Row (modifier = modifier.fillMaxWidth()){
+            Icon(painter = painterResource(id = id), contentDescription = "contact information for $contactName")
+            Spacer(modifier.width(10.dp))
+            Text(text = text, style = MaterialTheme.typography.bodyMedium, modifier = modifier.weight(2.0F))
+        }
+    }
+
+    CardView(modifier = modifier) {
+        Column (modifier = modifier.padding(10.dp)) {
+            Text(text = "Contact Information", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Spacer(modifier = modifier.height(10.dp))
+            Contact(id = R.drawable.github, text = "@MaarifaMaarifa", contactName = "GitHub", contactLink = "https://github.com/MaarifaMaarifa")
+            Spacer(modifier = modifier.height(10.dp))
+            Contact(id = R.drawable.twitter_x, text = "@MaarifaMaarifa", contactName = "Twitter", contactLink = "https://twitter.com/MaarifaMaarifa")
+        }
+    }
+
 }
 
 @Preview(showBackground = true)
