@@ -94,6 +94,11 @@ fun NumberInput(modifier: Modifier) {
     fun onValueChange(text: String) {
         textInput = text
 
+        if (textInput.isBlank()) {
+            identifiedNumber = null
+            return
+        }
+
         val rawNumber = RawNumber(textInput)
 
         try {
@@ -142,9 +147,7 @@ fun NumberInput(modifier: Modifier) {
 fun IdentifiedNumberText(identifiedNumber: IdentifiedNumber?) {
     if (identifiedNumber != null) {
         Text (text = "Number ${identifiedNumber.numberStr} is ${identifiedNumber.carrier}")
-    } else {
-        Text (text = "Could not identify carrier")
-    }
+    } 
 }
 
 @Composable
