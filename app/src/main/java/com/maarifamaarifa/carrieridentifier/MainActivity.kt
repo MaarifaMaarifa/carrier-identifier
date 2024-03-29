@@ -11,9 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,7 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 
 
@@ -61,7 +57,7 @@ fun View(modifier: Modifier ) {
 
 @Composable
 fun ApplicationBanner(modifier: Modifier) {
-    Surface (shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.secondary){
+    CardView (modifier){
         Row {
             Image(painter = painterResource(id = R.drawable.search), contentDescription = "Application Icon", modifier = modifier.padding(10.dp))
             Column (modifier = modifier.padding(10.dp)){
@@ -72,7 +68,6 @@ fun ApplicationBanner(modifier: Modifier) {
 
         }
     }
-
 }
 
 @Composable
@@ -80,7 +75,7 @@ fun NumberInput(modifier: Modifier) {
     var textInput by remember {
         mutableStateOf ("")
     }
-    var isErrored by remember {
+    var isError by remember {
         mutableStateOf(false)
     }
     var identifiedNumber: IdentifiedNumber? by remember {
@@ -96,6 +91,8 @@ fun NumberInput(modifier: Modifier) {
 
         if (textInput.isBlank()) {
             identifiedNumber = null
+            isError = false
+            errorText = ""
             return
         }
 
@@ -103,26 +100,26 @@ fun NumberInput(modifier: Modifier) {
 
         try {
             identifiedNumber = rawNumber.identifyNumber()
-            isErrored = false
+            isError = false
             errorText = ""
 
             try {
                 identifiedNumber!!.verifyLength()
             } catch (e: NumberTooShort) {
-                isErrored = true
+                isError = true
                 errorText = "The provided number is too short"
             } catch (e: NumberTooLong) {
-                isErrored = true
+                isError = true
                 errorText = "The provided number is too long"
             }
         } catch (e: UnknownCarrier) {
             errorText = "The number provided is of unknown carrier"
-            isErrored = true
+            isError = true
         } catch (e: InvalidNumberType) {
             errorText = "The number provided starts with invalid digits"
-            isErrored = true
+            isError = true
         } catch (e: NumberTooShort) {
-            isErrored = true
+            isError = true
             errorText = "The provided number is too short"        }
     }
 
@@ -131,23 +128,28 @@ fun NumberInput(modifier: Modifier) {
         Text (text = "Input phone number (i.e 07xxxx)")
     }
 
-    Surface (shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.secondary, modifier = modifier.height(IntrinsicSize.Min)) {
+    CardView(modifier = modifier) {
         Column (modifier = modifier.fillMaxSize().padding(5.dp), horizontalAlignment = Alignment.CenterHorizontally){
-            TextField(value = textInput, onValueChange = {text -> onValueChange(text)}, placeholder = {placeholder()}, isError = isErrored)
+            TextField(value = textInput, onValueChange = {text -> onValueChange(text)}, placeholder = {placeholder()}, isError = isError)
             Spacer(modifier = modifier.height(10.dp))
             IdentifiedNumberText(identifiedNumber)
             Spacer(modifier = modifier.height(10.dp))
             ErrorText(errorText = errorText)
         }
     }
-
 }
 
+@Composable
+fun CardView(modifier: Modifier, view: @Composable () -> Unit) {
+    Surface (shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.secondary, modifier = modifier.height(IntrinsicSize.Min)) {
+        view()
+    }
+}
 @Composable
 fun IdentifiedNumberText(identifiedNumber: IdentifiedNumber?) {
     if (identifiedNumber != null) {
         Text (text = "Number ${identifiedNumber.numberStr} is ${identifiedNumber.carrier}")
-    } 
+    }
 }
 
 @Composable
